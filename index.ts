@@ -1,12 +1,16 @@
 import {webkit} from "playwright";
 import {isAfter, isBefore, parse } from "@formkit/tempo"
 import cron from "node-cron"
+import {generateText} from "ai"
+import {styleText} from "util"
+import ollama from "ollama-ai-provider"
 
 process.loadEnvFile()
 
 //console.log(process.env.MJ_PUBLIC_KEY, process.env.Mj_SECRET_KEY)
 
 const browser = await webkit.launch() // abre el navegador
+
 
 const task = cron.schedule("*/10 * * * * *", async () => {
 
@@ -15,6 +19,7 @@ const task = cron.schedule("*/10 * * * * *", async () => {
     await page.goto("https://www.cgeonline.com.ar/informacion/apertura-de-citas.html")
 
     const table = page.locator("table") // tabla de apertuda de citas
+    
     const pasaporteRow = table.getByText("renovación y primera vez").locator("..").//devuelve el elemento anterior al texto
     locator(".."). // tengo la row completa
     locator("td:nth-child(2)")
