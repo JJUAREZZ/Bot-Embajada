@@ -1,9 +1,9 @@
 import {webkit} from "playwright";
-import {isAfter, parse } from "@formkit/tempo"
+import {isAfter, isBefore, parse } from "@formkit/tempo"
 
 process.loadEnvFile()
 
-console.log(process.env.MJ_PUBLIC_KEY, process.env.Mj_SECRET_KEY)
+//console.log(process.env.MJ_PUBLIC_KEY, process.env.Mj_SECRET_KEY)
 
 const browser = await webkit.launch() // abre el navegador
 const page = await browser.newPage() // abre una pestaña nueva
@@ -20,9 +20,46 @@ const [date]= nextDate.split(" a las ")
 const parsedDate = parse(`${date} -03:00`, "DD/MM/YYYY Z")
 
 
-if(isAfter(parsedDate, new Date())) {
+if(isBefore(parsedDate, new Date())) {
     console.log( `La proxima apertura de fechas es el ${parsedDate}` )
-    
+   /* const response = await fetch("https://api.mailjet.com/v3.1/send", {
+
+
+
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${Buffer.from(`${process.env.MJ_PUBLIC_KEY}:${process.env.MJ_SECRET_KEY}`).toString('base64')}`
+        },
+        body: JSON.stringify({
+            SandboxMode: false,
+            Messages: [
+                {
+                    From: {
+                        Email: "joacojuarez1@gmail.com",
+                        Name: "Me"
+                    },
+                    Subject: "Hay turno para pasaporte",
+                    TextPart: "Greetings from Mailjet!",
+                    HTMLPart: `<h3>La proxima apertura de fechas es el ${parsedDate}</h3>`,
+                    To: [
+                        {
+                            Email: "joacojuarez1@gmail.com",
+                            Name: "Joaquin Juarez"
+                        }
+                    ]
+                    
+                }
+            ]
+        })
+    });
+    if (!response.ok) {
+        console.error("Failed to send email:", response.statusText);
+    } else {
+        console.log("Email sent successfully!");
+    }*/
+    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_KEY}/sendMessage?chat_id=@pasaporteLocoChannel&text=${encodeURIComponent(`La proxima 
+    // apertura de fechas es el ${parsedDate}`)}`)
 } else {
     console.log("No hay fechas estipuladas")
 }
